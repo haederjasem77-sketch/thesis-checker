@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import re
+import os
+import base64
 from difflib import SequenceMatcher
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -21,12 +23,29 @@ st.markdown("""
         text-align: right;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    .main-title {
-        color: #1E3A8A;
-        font-size: 26px;
+    .header-box {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        direction: rtl;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #1E3A8A;
+        margin-bottom: 20px;
+    }
+    .header-text h2 {
+        color: #1E3A8A !important;
+        margin: 0;
+        font-size: 24px;
         font-weight: bold;
-        text-align: center;
-        margin-bottom: 5px;
+    }
+    .header-text h4 {
+        color: #374151 !important;
+        margin: 6px 0 0 0;
+        font-size: 16px;
+    }
+    .header-logo img {
+        width: 110px;
+        height: auto;
     }
     .sub-title {
         color: #4B5563;
@@ -52,6 +71,32 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
+
+# ترويسة الصفحة وشعار الكلية
+if os.path.exists("logo.png"):
+    with open("logo.png", "rb") as img_file:
+        logo_b64 = base64.b64encode(img_file.read()).decode()
+    st.markdown(f"""
+        <div class="header-box">
+            <div class="header-text">
+                <h2>الجامعة العراقية - كلية التربية للبنات</h2>
+                <h4>منظومة تدقيق وفحص تشابه عناوين الرسائل والأطاريح</h4>
+            </div>
+            <div class="header-logo">
+                <img src="data:image/png;base64,{logo_b64}">
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+else:
+    st.markdown("""
+        <div class="header-box">
+            <div class="header-text">
+                <h2>الجامعة العراقية - كلية التربية للبنات</h2>
+                <h4>منظومة تدقيق وفحص تشابه عناوين الرسائل والأطاريح</h4>
+            </div>
+            <div style="font-size: 38px;">🎓</div>
+        </div>
+    """, unsafe_allow_html=True)
 
 # تنظيف الحروف العربية للفحص اللفظي
 def clean_arabic_text(text):
@@ -103,8 +148,6 @@ with st.spinner("جاري تهيئة المنظومة وقاعدة البيان�
         st.error("يرجى التأكد من وجود ملف 'titles.xlsx' في المستودع.")
         st.stop()
 
-# رأس الصفحة
-st.markdown('<div class="main-title">🎓 منظومة تدقيق عناوين الرسائل والأطاريح</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-title">أدخلي العنوان المقترح في الحقل أدناه لفحص مدى توفره أو تشابهه مع العناوين المسجلة سابقاً</div>', unsafe_allow_html=True)
 
 # حقل الإدخال
